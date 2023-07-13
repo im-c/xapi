@@ -146,6 +146,7 @@ class XAPI {
 
   protected endpoint: string;
   private headers: { [key: string]: string };
+  private extraQueryParams: { [key: string]: string };
 
   public constructor(params: XAPIConfig) {
     const version: Versions = params.version || "1.0.3";
@@ -156,6 +157,7 @@ class XAPI {
       // No Authorization Process and Requirements - https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#no-authorization-process-and-requirements
       Authorization: params.auth ? params.auth : toBasicAuth("", ""),
     };
+    this.extraQueryParams = params.extraQueryParams || {};
   }
 
   public getAxios(): AxiosStatic {
@@ -168,7 +170,7 @@ class XAPI {
     requestConfig?: AxiosRequestConfig | undefined;
     requestOptions?: GetParamsBase;
   }): AxiosPromise<any> {
-    const extendedQueryParams = Object.assign({}, params.queryParams);
+    const extendedQueryParams = Object.assign({}, this.extraQueryParams, params.queryParams);
     if (params.requestOptions?.useCacheBuster) {
       extendedQueryParams["cachebuster"] = new Date().getTime().toString();
     }
